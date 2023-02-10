@@ -7,10 +7,12 @@ import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import routes from '../routes.js';
 import logo from '../assets/avatar.jpg';
+import useAuth from '../hooks/index.js';
 
 const LoginForm = () => {
   const inputEl = useRef();
   const navigate = useNavigate();
+  const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
   useEffect(() => {
     inputEl.current.focus();
@@ -26,10 +28,12 @@ const LoginForm = () => {
 
       try {
         const res = await axios.post(routes.loginPath(), values);
-        localStorage.setItem('userId', JSON.stringify(res.data));
-        /* auth.logIn(); */
-        const { from } = { from: { pathname: '/' } };
-        navigate(from);
+        if (res.status === 200) {
+          localStorage.setItem('user', JSON.stringify(res.data));
+          auth.logIn();
+          const { from } = { from: { pathname: '/' } };
+          navigate(from);
+        }
       } catch (err) {
         formik.setSubmitting(false);
         if (err.isAxiosError && err.response.status === 401) {

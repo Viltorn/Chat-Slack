@@ -9,7 +9,7 @@ const ErrorPage = () => {
     <div className="text-center" id="error-page">
       <img
         alt="Страница не найдена"
-        className="img-fluid h-25"
+        style={{ height: '200px', width: '200px' }}
         src={errorImage}
       />
       <h1 className="h4 text-muted">Страница не найдена</h1>
