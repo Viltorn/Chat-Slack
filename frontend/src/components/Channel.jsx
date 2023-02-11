@@ -6,9 +6,14 @@ const Channel = ({ channel }) => {
   const { name, id } = channel;
   const { currentChannelId } = useSelector((state) => state.channelsReducer);
 
+  const changeChannel = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <li className="nav-item w-100">
       <button
+        onClick={changeChannel}
         type="button"
         className={cn('w-100', 'rounded-0', 'text-start', 'btn', { 'btn-secondary': id === currentChannelId })}
       >

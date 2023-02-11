@@ -1,46 +1,63 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import { Form } from 'react-bootstrap';
-import axios from 'axios';
-import routes from '../routes.js';
 import Message from './Message.jsx';
+import { actions as messageActions } from '../slices/messagesSlice.js';
 
-const Messages = () => {
+const getUserName = () => {
+  const userId = JSON.parse(localStorage.getItem('user'));
+  return userId.username;
+};
+
+const Messages = ({ socket }) => {
+  const user = getUserName();
   const { currentChannel, currentId } = useSelector((state) => {
     const id = state.channelsReducer.currentChannelId;
     const current = state.channelsReducer.channels.find((channel) => channel.id === id);
-    console.log(current);
     return { currentChannel: current, currentId: id };
   });
 
   const messages = useSelector((state) => state.messagesReducer.messages
     .filter((message) => message.channelId === currentId));
 
+  const dispatch = useDispatch();
   const inputEl = useRef();
+  const formEl = useRef();
 
   useEffect(() => {
     inputEl.current.focus();
-  }, []);
+    socket.on('connect', () => {
+      console.log(socket.connected);
+    });
+
+    socket.on('newMessage', (payload) => {
+      console.log(payload);
+      dispatch(messageActions.addMessage(payload));
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('newMessage');
+    };
+  }, [dispatch, socket]);
 
   const formik = useFormik({
     initialValues: {
-      message: '',
+      body: '',
     },
-    onSubmit: async (values) => {
-      try {
-        const res = await axios.post(routes.loginPath(), values);
-        if (res.status === 200) {
-          localStorage.setItem('user', JSON.stringify(res.data));
-        }
-      } catch (err) {
-        formik.setSubmitting(false);
-        if (err.isAxiosError && err.response.status === 401) {
-          inputEl.current.select();
-          return;
-        }
-        throw err;
-      }
+    onSubmit: (values) => {
+      const makeEmit = (websocket, event, arg) => {
+        websocket.timeout(1000).emit(event, arg, (err) => {
+          if (err) {
+            makeEmit(socket, event, arg);
+          }
+        });
+      };
+      makeEmit(socket, 'newMessage', { body: values.body, channelId: currentId, username: user });
+      formik.values.body = '';
+      inputEl.current.focus();
+      formik.setSubmitting(false);
     },
   });
 
@@ -66,16 +83,16 @@ const Messages = () => {
           {messages.map((message) => <Message key={message.id} message={message} />)}
         </div>
         <div className="mt-auto px-5 py-3">
-          <Form onSubmit={formik.handleSubmit} className="py-1 border rounded-2">
+          <Form ref={formEl} onSubmit={formik.handleSubmit} className="py-1 border rounded-2">
             <Form.Group className="input-group has-validation">
               <Form.Control
                 className="border-0 p-0 ps-2 form-control"
                 onChange={formik.handleChange}
-                value={formik.values.message}
+                value={formik.values.body}
                 placeholder="Введите сообщение..."
-                name="message"
-                id="message"
-                autoComplete="message"
+                name="body"
+                id="body"
+                autoComplete="body"
                 required
                 ref={inputEl}
               />
