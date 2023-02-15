@@ -10,6 +10,7 @@ import store from './slices/index.js';
 import App from './components/App';
 import LoginForm from './components/LoginForm.jsx';
 import ErrorPage from './components/error-page.jsx';
+import Header from './components/Header.jsx';
 import resources from './locales/index.js';
 import AuthContext from './contexts/index.js';
 
@@ -55,6 +56,7 @@ const init = async () => {
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
         <Provider store={store}>
+          <Header />
           <RouterProvider router={router} />
         </Provider>
       </AuthProvider>

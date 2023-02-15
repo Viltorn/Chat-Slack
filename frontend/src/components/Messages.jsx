@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import { Form } from 'react-bootstrap';
 import Message from './Message.jsx';
-import { actions as messageActions } from '../slices/messagesSlice.js';
 
 const getUserName = () => {
   const userId = JSON.parse(localStorage.getItem('user'));
@@ -21,41 +20,25 @@ const Messages = ({ socket }) => {
   const messages = useSelector((state) => state.messagesReducer.messages
     .filter((message) => message.channelId === currentId));
 
-  const dispatch = useDispatch();
   const inputEl = useRef();
   const formEl = useRef();
 
   useEffect(() => {
     inputEl.current.focus();
-    socket.on('connect', () => {
-      console.log(socket.connected);
-    });
-
-    socket.on('newMessage', (payload) => {
-      console.log(payload);
-      dispatch(messageActions.addMessage(payload));
-    });
-
-    return () => {
-      socket.off('connect');
-      socket.off('newMessage');
-    };
-  }, [dispatch, socket]);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       body: '',
     },
     onSubmit: (values) => {
-      const makeEmit = (websocket, event, arg) => {
-        websocket.timeout(1000).emit(event, arg, (err) => {
-          if (err) {
-            makeEmit(socket, event, arg);
-          }
-        });
-      };
-      makeEmit(socket, 'newMessage', { body: values.body, channelId: currentId, username: user });
-      formik.values.body = '';
+      socket.emit('newMessage', { body: values.body, channelId: currentId, username: user }, (response) => {
+        if (response.status !== 'ok') {
+          console.log('Lost connection');
+          formik.setSubmitting(false);
+        }
+      });
+      formik.handleReset();
       inputEl.current.focus();
       formik.setSubmitting(false);
     },
@@ -88,6 +71,7 @@ const Messages = ({ socket }) => {
               <Form.Control
                 className="border-0 p-0 ps-2 form-control"
                 onChange={formik.handleChange}
+                aria-label="Новое сообщение"
                 value={formik.values.body}
                 placeholder="Введите сообщение..."
                 name="body"
@@ -98,8 +82,8 @@ const Messages = ({ socket }) => {
               />
               <button
                 type="submit"
-                className="btn btn-group-vertical"
                 disabled={!formik.dirty || formik.isSubmitting}
+                className="btn btn-light btn-group-vertical"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                   <path fillRule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
