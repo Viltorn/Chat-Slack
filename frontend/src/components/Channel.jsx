@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { Dropdown } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,6 +18,7 @@ const ButtonEl = ({ name, classes, change }) => (
 );
 
 const Channel = ({ channel }) => {
+  const { t } = useTranslation();
   const { name, id, removable } = channel;
   const { currentChannelId } = useSelector((state) => state.channelsReducer);
   const classes = cn({
@@ -48,13 +50,13 @@ const Channel = ({ channel }) => {
               href="#"
               onClick={() => dispatch(modalsActions.openModal({ type: 'removeChannel', id }))}
             >
-              Удалить
+              {t('Delete')}
             </Dropdown.Item>
             <Dropdown.Item
               href="#"
               onClick={() => dispatch(modalsActions.openModal({ type: 'renameChannel', id }))}
             >
-              Переименовать
+              {t('Rename')}
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

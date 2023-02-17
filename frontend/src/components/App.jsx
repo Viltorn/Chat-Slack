@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import routes from '../routes';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
+import Header from './Header';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messageActions } from '../slices/messagesSlice.js';
 import getModal from '../modals/index.js';
@@ -94,22 +95,19 @@ const App = () => {
   }, [dispatch, currentId, currentChannels]);
 
   return (
-    !localStorage.getItem('user') ? <Navigate to="/login" state={{ from: location }} />
-      : (
+    localStorage.getItem('user')
+      ? (
         <>
-          <div className="h-100">
-            <div className="d-flex flex-column h-100">
-              <div className="container h-100 my-4 overflow-hidden rounded shadow">
-                <div className="row h-100 bg-white flex-md-row">
-                  <Channels />
-                  <Messages socket={socket} />
-                </div>
-              </div>
+          <Header />
+          <div className="container h-100 my-4 overflow-hidden rounded shadow">
+            <div className="row h-100 bg-white flex-md-row">
+              <Channels />
+              <Messages socket={socket} />
             </div>
           </div>
           {(renderModal(isOpened, type))}
         </>
-      )
+      ) : <Navigate to="/login" state={{ from: location }} />
   );
 };
 export default App;

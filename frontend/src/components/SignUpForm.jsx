@@ -11,12 +11,13 @@ import logo from '../assets/avatar.jpg';
 import useAuth from '../hooks/index.js';
 import Header from './Header.jsx';
 
-const LoginForm = () => {
+const SignUpForm = () => {
   const { t } = useTranslation();
   const inputEl = useRef();
   const navigate = useNavigate();
   const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
+
   useEffect(() => {
     inputEl.current.focus();
   }, []);
@@ -25,13 +26,13 @@ const LoginForm = () => {
     initialValues: {
       username: '',
       password: '',
+      repeatPass: '',
     },
     onSubmit: async (values) => {
       setAuthFailed(false);
-
       try {
-        const res = await axios.post(routes.loginPath(), values);
-        if (res.status === 200) {
+        const res = await axios.post(routes.signUpPath(), values);
+        if (res.status === 201) {
           localStorage.setItem('user', JSON.stringify(res.data));
           auth.logIn();
           const { from } = { from: { pathname: '/' } };
@@ -39,9 +40,10 @@ const LoginForm = () => {
         }
       } catch (err) {
         formik.setSubmitting(false);
-        if (err.isAxiosError && err.response.status === 401) {
-          setAuthFailed('LoginError');
-          inputEl.current.select();
+        if (err.isAxiosError && err.response.status === 409) {
+          console.log(err);
+          setAuthFailed('Conflict');
+          inputEl.current.focus();
           return;
         }
         setAuthFailed('NetworkError');
@@ -49,8 +51,20 @@ const LoginForm = () => {
       }
     },
     validationSchema: Yup.object().shape({
-      username: Yup.string(),
-      password: Yup.string(),
+      username: Yup
+        .string()
+        .required('Required')
+        .max(20, 'Max20')
+        .min(3, 'Min3'),
+      password: Yup
+        .string()
+        .required('Required')
+        .min(6, 'Min6'),
+      repeatPass: Yup
+        .string()
+        .required('Required')
+        .min(6, 'Min6')
+        .oneOf([Yup.ref('password'), null], 'Identical'),
     }),
     validateOnChange: false,
   });
@@ -67,51 +81,66 @@ const LoginForm = () => {
                   <img src={logo} className="rounded-circle" alt="Войти" />
                 </div>
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
-                  <h1 className="text-center mb-4">{t('Enter')}</h1>
+                  <h1 className="text-center mb-4">{t('Registration')}</h1>
                   <fieldset disabled={formik.isSubmitting}>
                     <Form.Group className="form-floating mb-3">
                       <Form.Control
                         onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         value={formik.values.username}
                         placeholder="username"
                         name="username"
                         id="username"
                         autoComplete="username"
-                        isInvalid={authFailed}
-                        required
+                        isInvalid={(formik.errors.username
+                          && formik.touched.username) || authFailed}
                         ref={inputEl}
                       />
-                      <Form.Label htmlFor="username">{t('Nickname')}</Form.Label>
+                      <Form.Label htmlFor="username">{t('Username')}</Form.Label>
+                      {formik.errors.username && formik.touched.username ? (
+                        <div className="invalid-feedback">{t(`errors.${formik.errors.username}`)}</div>
+                      ) : null}
+                      {authFailed ? (
+                        <Form.Control.Feedback type="invalid">{t(`errors.${authFailed}`)}</Form.Control.Feedback>
+                      ) : null}
                     </Form.Group>
                     <Form.Group className="form-floating mb-4">
                       <Form.Control
                         type="password"
-                        onChange={formik.handleChange}
+                        onChange={formik.handleChange('password')}
+                        onBlur={formik.handleBlur('password')}
                         value={formik.values.password}
                         placeholder="password"
                         name="password"
                         id="password"
                         autoComplete="current-password"
-                        isInvalid={authFailed}
-                        required
+                        isInvalid={formik.errors.password && formik.touched.password}
                       />
                       <Form.Label htmlFor="password">{t('Password')}</Form.Label>
-                      <Form.Control.Feedback type="invalid">{t(`errors.${authFailed}`)}</Form.Control.Feedback>
+                      {formik.touched.password && formik.errors.password ? (
+                        <div className="invalid-feedback">{t(`errors.${formik.errors.password}`)}</div>
+                      ) : null}
                     </Form.Group>
-                    <Button type="submit" variant="outline-primary" className="w-100">{t('Enter')}</Button>
+                    <Form.Group className="form-floating mb-4">
+                      <Form.Control
+                        type="password"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.repeatPass}
+                        placeholder="repeatpassword"
+                        name="repeatPass"
+                        id="repeatPass"
+                        autoComplete="current-repeatpass"
+                        isInvalid={formik.errors.repeatPass && formik.touched.repeatPass}
+                      />
+                      <Form.Label htmlFor="repeatPass">{t('PasswordConfirm')}</Form.Label>
+                      {formik.touched.repeatPass && formik.errors.repeatPass ? (
+                        <div className="invalid-feedback">{t(`errors.${formik.errors.repeatPass}`)}</div>
+                      ) : null}
+                    </Form.Group>
+                    <Button type="submit" variant="outline-primary" className="w-100">Войти</Button>
                   </fieldset>
                 </Form>
-              </div>
-              <div className="card-footer p-4">
-                <div className="text-center">
-                  <span>
-                    {t('AskForAccount')}
-                  </span>
-                    &nbsp;
-                  <a href="/signup">
-                    {t('Registration')}
-                  </a>
-                </div>
               </div>
             </div>
           </div>
@@ -121,4 +150,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default SignUpForm;

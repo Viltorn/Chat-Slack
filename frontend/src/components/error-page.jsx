@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { useRouteError } from 'react-router-dom';
 import errorImage from '../assets/not-found.svg';
 
 const ErrorPage = () => {
   const error = useRouteError();
   console.error(error);
+  const { t } = useTranslation();
 
   return (
     <div className="text-center" id="error-page">
@@ -12,10 +14,10 @@ const ErrorPage = () => {
         style={{ height: '200px', width: '200px' }}
         src={errorImage}
       />
-      <h1 className="h4 text-muted">Страница не найдена</h1>
+      <h1 className="h4 text-muted">{t('PageNotFound')}</h1>
       <p className="text-muted">
-        Но вы можете перейти
-        <a href="/">на главную страницу</a>
+        {t('YouCanChangeover')}
+        <a href="/">{t('GoToMain')}</a>
       </p>
     </div>
   );

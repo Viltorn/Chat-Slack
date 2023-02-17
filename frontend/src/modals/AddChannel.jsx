@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -13,6 +14,7 @@ import { actions as modalActions } from '../slices/modalsSlice';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 
 const AddChannel = ({ socket }) => {
+  const { t } = useTranslation();
   const inputEl = useRef();
   const dispatch = useDispatch();
   const { channels } = useSelector((state) => state.channelsReducer);
@@ -33,29 +35,33 @@ const AddChannel = ({ socket }) => {
     validationSchema: Yup.object({
       channel: Yup
         .string()
-        .notOneOf(channelNames, 'Должно быть уникальным')
-        .max(20, 'Максимум 20 символов')
-        .min(3, 'Минимум 3 символа'),
+        .notOneOf(channelNames, 'Unique')
+        .max(20, 'Max20')
+        .min(3, 'Min3'),
     }),
     onSubmit: (values) => {
-      socket.emit('newChannel', { name: values.channel }, (response) => {
-        if (response.status === 'ok') {
-          const channel = response.data;
-          const { id } = channel;
-          dispatch(channelsActions.changeCurrentChannel(id));
-          handleClose();
-        } else {
-          console.log('Lost connection');
-          formik.setSubmitting(false);
-        }
-      });
+      try {
+        socket.emit('newChannel', { name: values.channel }, (response) => {
+          if (response.status === 'ok') {
+            const channel = response.data;
+            const { id } = channel;
+            dispatch(channelsActions.changeCurrentChannel(id));
+            handleClose();
+          } else {
+            console.log('Lost connection');
+            formik.setSubmitting(false);
+          }
+        });
+      } catch (err) {
+        formik.setSubmitting(false);
+      }
     },
   });
 
   return (
     <Modal show>
       <Modal.Header closeButton onHide={handleClose}>
-        <Modal.Title>Добавить канал</Modal.Title>
+        <Modal.Title>{t('AddChannel')}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -71,15 +77,16 @@ const AddChannel = ({ socket }) => {
                 value={formik.values.channel}
                 data-testid="input-body"
                 name="channel"
+                isInvalid={formik.errors.channel}
                 className="mb-2"
               />
               {formik.touched.channel && formik.errors.channel ? (
-                <div className="invalid-feedback">{formik.errors.channel}</div>
+                <div className="invalid-feedback">{t(`errors.${formik.errors.channel}`)}</div>
               ) : null}
-              <FormLabel htmlFor="channel" className="visually-hidden">Введите имя</FormLabel>
+              <FormLabel htmlFor="channel" className="visually-hidden">{t('Entername')}</FormLabel>
               <FormGroup className="d-flex justify-content-end">
-                <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">Отменить</Button>
-                <Button variant="primary" type="submit">Отправить</Button>
+                <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">{t('Cancel')}</Button>
+                <Button variant="primary" type="submit">{t('Send')}</Button>
               </FormGroup>
             </FormGroup>
           </fieldset>

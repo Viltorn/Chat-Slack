@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -12,6 +13,7 @@ import {
 import { actions as modalActions } from '../slices/modalsSlice';
 
 const RenameChannel = ({ socket }) => {
+  const { t } = useTranslation();
   const inputEl = useRef();
   const dispatch = useDispatch();
   const { channels } = useSelector((state) => state.channelsReducer);
@@ -31,7 +33,11 @@ const RenameChannel = ({ socket }) => {
       channel: '',
     },
     validationSchema: Yup.object({
-      channel: Yup.string().notOneOf(channelNames, 'Должно быть уникальным'),
+      channel: Yup
+        .string()
+        .notOneOf(channelNames, 'Unique')
+        .max(20, 'Max20')
+        .min(3, 'Min3'),
     }),
     onSubmit: (values) => {
       socket.emit('renameChannel', { id, name: values.channel }, (response) => {
@@ -48,7 +54,7 @@ const RenameChannel = ({ socket }) => {
   return (
     <Modal show>
       <Modal.Header closeButton onHide={handleClose}>
-        <Modal.Title>Преименовать канал</Modal.Title>
+        <Modal.Title>{t('RenameChannel')}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -63,16 +69,17 @@ const RenameChannel = ({ socket }) => {
                 onBlur={formik.handleBlur}
                 value={formik.values.channel}
                 data-testid="input-body"
+                isInvalid={formik.errors.channel}
                 name="channel"
                 className="mb-2"
               />
               {formik.touched.channel && formik.errors.channel ? (
-                <div className="invalid-feedback">{formik.errors.channel}</div>
+                <div className="invalid-feedback">{t(`errors.${formik.errors.channel}`)}</div>
               ) : null}
-              <FormLabel htmlFor="name" className="visually-hidden">Введите имя</FormLabel>
+              <FormLabel htmlFor="name" className="visually-hidden">{t('Entername')}</FormLabel>
               <FormGroup className="d-flex justify-content-end">
-                <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">Отменить</Button>
-                <Button variant="primary" type="submit">Отправить</Button>
+                <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">{t('Cancel')}</Button>
+                <Button variant="primary" type="submit">{t('Send')}</Button>
               </FormGroup>
             </FormGroup>
           </fieldset>

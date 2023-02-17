@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
@@ -8,6 +9,7 @@ import {
 import { actions as modalActions } from '../slices/modalsSlice';
 
 const RemoveChannel = ({ socket }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.modalsReducer);
 
@@ -28,14 +30,14 @@ const RemoveChannel = ({ socket }) => {
   return (
     <Modal show>
       <Modal.Header closeButton onHide={handleClose}>
-        <Modal.Title>Удалить канал</Modal.Title>
+        <Modal.Title>{t('DeleteChannel')}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <p className="lead">Уверены?</p>
+        <p className="lead">{t('YouSure')}</p>
         <FormGroup className="d-flex justify-content-end">
-          <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">Отменить</Button>
-          <Button variant="danger" onClick={deleteChannel}>Удалить</Button>
+          <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">{t('Cancel')}</Button>
+          <Button variant="danger" onClick={deleteChannel}>{t('Delete')}</Button>
         </FormGroup>
       </Modal.Body>
     </Modal>

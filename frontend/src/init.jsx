@@ -10,7 +10,7 @@ import store from './slices/index.js';
 import App from './components/App';
 import LoginForm from './components/LoginForm.jsx';
 import ErrorPage from './components/error-page.jsx';
-import Header from './components/Header.jsx';
+import SignUpForm from './components/SignUpForm.jsx';
 import resources from './locales/index.js';
 import AuthContext from './contexts/index.js';
 
@@ -23,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginForm />,
+  },
+  {
+    path: '/signup',
+    element: <SignUpForm />,
   },
 ]);
 
@@ -48,6 +52,10 @@ const init = async () => {
   await i18n
     .use(initReactI18next)
     .init({
+      debug: true,
+      interpolation: {
+        escapeValue: false,
+      },
       resources,
       fallbackLng: 'ru',
     });
@@ -56,8 +64,9 @@ const init = async () => {
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
         <Provider store={store}>
-          <Header />
-          <RouterProvider router={router} />
+          <div className="d-flex flex-column h-100">
+            <RouterProvider router={router} />
+          </div>
         </Provider>
       </AuthProvider>
     </I18nextProvider>
