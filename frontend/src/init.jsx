@@ -52,7 +52,7 @@ const init = async () => {
   await i18n
     .use(initReactI18next)
     .init({
-      debug: true,
+      debug: false,
       interpolation: {
         escapeValue: false,
       },

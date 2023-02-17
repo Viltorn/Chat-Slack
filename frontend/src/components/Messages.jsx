@@ -10,7 +10,7 @@ const getUserName = () => {
   return userId.username;
 };
 
-const Messages = ({ socket }) => {
+const Messages = ({ socket, notify }) => {
   const { t } = useTranslation();
   const user = getUserName();
   const { currentChannel, currentId } = useSelector((state) => {
@@ -36,8 +36,9 @@ const Messages = ({ socket }) => {
     onSubmit: (values) => {
       socket.emit('newMessage', { body: values.body, channelId: currentId, username: user }, (response) => {
         if (response.status !== 'ok') {
-          console.log('Lost connection');
           formik.setSubmitting(false);
+        } else {
+          notify('error');
         }
       });
       formik.handleReset();

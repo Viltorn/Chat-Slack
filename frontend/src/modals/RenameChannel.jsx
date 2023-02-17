@@ -12,7 +12,7 @@ import {
 } from 'react-bootstrap';
 import { actions as modalActions } from '../slices/modalsSlice';
 
-const RenameChannel = ({ socket }) => {
+const RenameChannel = ({ socket, notify }) => {
   const { t } = useTranslation();
   const inputEl = useRef();
   const dispatch = useDispatch();
@@ -43,7 +43,9 @@ const RenameChannel = ({ socket }) => {
       socket.emit('renameChannel', { id, name: values.channel }, (response) => {
         if (response.status === 'ok') {
           handleClose();
+          notify('rename');
         } else {
+          notify('error');
           console.log('Lost connection');
           formik.setSubmitting(false);
         }

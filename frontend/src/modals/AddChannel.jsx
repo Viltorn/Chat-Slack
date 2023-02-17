@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+// import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
@@ -13,7 +14,7 @@ import {
 import { actions as modalActions } from '../slices/modalsSlice';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 
-const AddChannel = ({ socket }) => {
+const AddChannel = ({ socket, notify }) => {
   const { t } = useTranslation();
   const inputEl = useRef();
   const dispatch = useDispatch();
@@ -46,13 +47,16 @@ const AddChannel = ({ socket }) => {
             const channel = response.data;
             const { id } = channel;
             dispatch(channelsActions.changeCurrentChannel(id));
+            notify('add');
             handleClose();
           } else {
             console.log('Lost connection');
             formik.setSubmitting(false);
+            notify('error');
           }
         });
       } catch (err) {
+        notify('error');
         formik.setSubmitting(false);
       }
     },

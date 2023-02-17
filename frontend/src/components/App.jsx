@@ -1,4 +1,8 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.min.css';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -23,15 +27,8 @@ const getAuthHeader = () => {
   return {};
 };
 
-const renderModal = (isOpened, type) => {
-  if (!isOpened) {
-    return null;
-  }
-  const Modal = getModal(type);
-  return <Modal socket={socket} />;
-};
-
 const App = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const dispatch = useDispatch();
   const { isOpened, type } = useSelector((state) => state.modalsReducer);
@@ -41,10 +38,46 @@ const App = () => {
     return { currentId: id, currentChannels: channels };
   });
 
+  const notify = (status) => {
+    const settings = {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    };
+    switch (status) {
+      case 'add':
+        toast.success(t('ChannelCreated'), settings);
+        break;
+      case 'remove':
+        toast.success(t('ChannelRemove'), settings);
+        break;
+      case 'rename':
+        toast.success(t('ChannelRenamed'), settings);
+        break;
+      default:
+        toast.error(t('NetworkError'), settings);
+        break;
+    }
+  };
+  const renderModal = (status, option) => {
+    if (!status) {
+      return null;
+    }
+    const Modal = getModal(option);
+    return <Modal notify={notify} socket={socket} />;
+  };
+
   useEffect(() => {
     const getData = async () => {
       try {
-        const { data } = await axios.get(routes.statePath(), { headers: getAuthHeader() });
+        const { data } = await axios.get(routes.statePath(), {
+          headers: getAuthHeader(),
+        });
         const { channels, messages, currentChannelId } = data;
         dispatch(channelsActions.changeCurrentChannel(currentChannelId));
         dispatch(channelsActions.addChannels(channels));
@@ -94,20 +127,31 @@ const App = () => {
     };
   }, [dispatch, currentId, currentChannels]);
 
-  return (
-    localStorage.getItem('user')
-      ? (
-        <>
-          <Header />
-          <div className="container h-100 my-4 overflow-hidden rounded shadow">
-            <div className="row h-100 bg-white flex-md-row">
-              <Channels />
-              <Messages socket={socket} />
-            </div>
-          </div>
-          {(renderModal(isOpened, type))}
-        </>
-      ) : <Navigate to="/login" state={{ from: location }} />
+  return localStorage.getItem('user') ? (
+    <>
+      <Header />
+      <div className="container h-100 my-4 overflow-hidden rounded shadow">
+        <div className="row h-100 bg-white flex-md-row">
+          <Channels />
+          <Messages notify={notify} socket={socket} />
+        </div>
+      </div>
+      {renderModal(isOpened, type)}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
+  ) : (
+    <Navigate to="/login" state={{ from: location }} />
   );
 };
 export default App;

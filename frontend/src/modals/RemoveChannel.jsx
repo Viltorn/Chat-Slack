@@ -8,7 +8,7 @@ import {
 } from 'react-bootstrap';
 import { actions as modalActions } from '../slices/modalsSlice';
 
-const RemoveChannel = ({ socket }) => {
+const RemoveChannel = ({ socket, notify }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.modalsReducer);
@@ -21,7 +21,9 @@ const RemoveChannel = ({ socket }) => {
     socket.emit('removeChannel', { id }, (response) => {
       if (response.status === 'ok') {
         handleClose();
+        notify('remove');
       } else {
+        notify('error');
         console.log('Lost connection');
       }
     });
