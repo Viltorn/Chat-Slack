@@ -60,7 +60,7 @@ const App = () => {
         toast.success(t('ChannelRenamed'), settings);
         break;
       default:
-        toast.error(t('NetworkError'), settings);
+        toast.error(t('errors.NetworkError'), settings);
         break;
     }
   };

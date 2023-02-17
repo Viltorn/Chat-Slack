@@ -37,7 +37,6 @@ const Messages = ({ socket, notify }) => {
       socket.emit('newMessage', { body: values.body, channelId: currentId, username: user }, (response) => {
         if (response.status !== 'ok') {
           formik.setSubmitting(false);
-        } else {
           notify('error');
         }
       });

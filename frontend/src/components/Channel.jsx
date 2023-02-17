@@ -1,21 +1,26 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import filter from 'leo-profanity';
 import cn from 'classnames';
 import { Dropdown } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { actions as modalsActions } from '../slices/modalsSlice.js';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 
-const ButtonEl = ({ name, classes, change }) => (
-  <button
-    onClick={change}
-    type="button"
-    className={classes}
-  >
-    <span className="me-1">#</span>
-    {name}
-  </button>
-);
+const ButtonEl = ({ name, classes, change }) => {
+  const { i18n } = useTranslation();
+  filter.loadDictionary(i18n.resolvedLanguage);
+  return (
+    <button
+      onClick={change}
+      type="button"
+      className={classes}
+    >
+      <span className="me-1">#</span>
+      {filter.clean(`${name}`)}
+    </button>
+  );
+};
 
 const Channel = ({ channel }) => {
   const { t } = useTranslation();
