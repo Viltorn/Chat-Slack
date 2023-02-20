@@ -18,7 +18,7 @@ export default {
     PasswordConfirm: 'Подтвердите пароль',
     AddChannel: 'Добавить канал',
     Cancel: 'Отменить',
-    Entername: 'Введите имя',
+    ChannelName: 'Имя канала',
     RenameChannel: 'Преименовать канал',
     DeleteChannel: 'Удалить канал',
     YouSure: 'Уверены?',

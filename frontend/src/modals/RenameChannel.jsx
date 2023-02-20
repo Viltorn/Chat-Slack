@@ -77,7 +77,7 @@ const RenameChannel = ({ socket, notify }) => {
               {formik.touched.channel && formik.errors.channel ? (
                 <div className="invalid-feedback">{t(`errors.${formik.errors.channel}`)}</div>
               ) : null}
-              <FormLabel htmlFor="name" className="visually-hidden">{t('Entername')}</FormLabel>
+              <FormLabel htmlFor="name" className="visually-hidden">{t('ChannelName')}</FormLabel>
               <FormGroup className="d-flex justify-content-end">
                 <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">{t('Cancel')}</Button>
                 <Button variant="primary" type="submit">{t('Send')}</Button>
