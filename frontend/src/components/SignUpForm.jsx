@@ -62,7 +62,6 @@ const SignUpForm = ({ notify }) => {
       repeatPass: Yup
         .string()
         .required('Required')
-        .min(6, 'Min6')
         .oneOf([Yup.ref('password'), null], 'Identical'),
     }),
     validateOnChange: false,
