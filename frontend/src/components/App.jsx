@@ -51,24 +51,6 @@ const App = () => {
     }
   };
 
-  /* const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <Chat notify={notify} socket={socket} />,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/login',
-      element: <LoginForm notify={notify} />,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/signup',
-      element: <SignUpForm notify={notify} />,
-      errorElement: <ErrorPage />,
-    },
-  ]); */
-
   useEffect(() => {
     socket.on('connect', () => {
       console.log(socket.connected);

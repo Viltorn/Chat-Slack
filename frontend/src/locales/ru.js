@@ -24,7 +24,7 @@ export default {
     DeleteChannel: 'Удалить канал',
     YouSure: 'Уверены?',
     ChannelCreated: 'Канал создан',
-    ChannelRemove: 'Канал удален',
+    ChannelRemove: 'Канал удалён',
     ChannelRenamed: 'Канал переименован',
     errors: {
       LoginError: 'Неверные имя пользователя или пароль',
