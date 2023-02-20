@@ -16,6 +16,7 @@ export default {
     GoToMain: ' на главную страницу',
     Username: 'Имя пользователя',
     PasswordConfirm: 'Подтвердите пароль',
+    ChannelToogle: 'Управление каналом',
     AddChannel: 'Добавить канал',
     Cancel: 'Отменить',
     ChannelName: 'Имя канала',

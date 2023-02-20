@@ -48,8 +48,9 @@ const Channel = ({ channel }) => {
       {removable && (
         <Dropdown role="group" className="d-flex dropdown btn-group">
           <ButtonEl name={name} change={changeChannel} classes={classes} />
-          <Dropdown.Toggle variant="" id="dropdown-basic" />
-
+          <Dropdown.Toggle variant="" id="dropdown-basic">
+            <span className="visually-hidden">{t('ChannelToogle')}</span>
+          </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item
               href="#"
