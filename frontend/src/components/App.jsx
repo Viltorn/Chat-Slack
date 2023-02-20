@@ -1,42 +1,28 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-toastify/dist/ReactToastify.min.css';
-import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
-import { Navigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
-import routes from '../routes';
-import Channels from './Channels.jsx';
-import Messages from './Messages.jsx';
-import Header from './Header';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messageActions } from '../slices/messagesSlice.js';
-import getModal from '../modals/index.js';
+import LoginForm from './LoginForm.jsx';
+import ErrorPage from './error-page.jsx';
+import SignUpForm from './SignUpForm.jsx';
+import Chat from './Chat.jsx';
+import Header from './Header.jsx';
 
 const socket = io();
 
-const getAuthHeader = () => {
-  const userId = JSON.parse(localStorage.getItem('user'));
-
-  if (userId && userId.token) {
-    return { Authorization: `Bearer ${userId.token}` };
-  }
-
-  return {};
-};
-
 const App = () => {
   const { t } = useTranslation();
-  const location = useLocation();
   const dispatch = useDispatch();
-  const { isOpened, type } = useSelector((state) => state.modalsReducer);
-  const { currentId, currentChannels } = useSelector((state) => {
-    const id = state.channelsReducer.currentChannelId;
-    const { channels } = state.channelsReducer;
-    return { currentId: id, currentChannels: channels };
-  });
 
   const notify = (status) => {
     const settings = {
@@ -64,31 +50,24 @@ const App = () => {
         break;
     }
   };
-  const renderModal = (status, option) => {
-    if (!status) {
-      return null;
-    }
-    const Modal = getModal(option);
-    return <Modal notify={notify} socket={socket} />;
-  };
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const { data } = await axios.get(routes.statePath(), {
-          headers: getAuthHeader(),
-        });
-        const { channels, messages, currentChannelId } = data;
-        dispatch(channelsActions.changeCurrentChannel(currentChannelId));
-        dispatch(channelsActions.addChannels(channels));
-        dispatch(messageActions.addMessages(messages));
-      } catch (err) {
-        console.log(err);
-        throw err;
-      }
-    };
-    getData();
-  }, [dispatch]);
+  /* const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <Chat notify={notify} socket={socket} />,
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: '/login',
+      element: <LoginForm notify={notify} />,
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: '/signup',
+      element: <SignUpForm notify={notify} />,
+      errorElement: <ErrorPage />,
+    },
+  ]); */
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -106,11 +85,7 @@ const App = () => {
 
     socket.on('removeChannel', (payload) => {
       console.log(payload);
-      const { id } = payload;
       dispatch(channelsActions.removeChannel(payload));
-      if (id === currentId) {
-        dispatch(channelsActions.changeCurrentChannel(currentChannels[0].id));
-      }
     });
 
     socket.on('renameChannel', (payload) => {
@@ -125,33 +100,19 @@ const App = () => {
       socket.off('removeChannel');
       socket.off('renameChannel');
     };
-  }, [dispatch, currentId, currentChannels]);
+  }, [dispatch]);
 
-  return localStorage.getItem('user') ? (
-    <>
+  return (
+    <BrowserRouter>
       <Header />
-      <div className="container h-100 my-4 overflow-hidden rounded shadow">
-        <div className="row h-100 bg-white flex-md-row">
-          <Channels />
-          <Messages notify={notify} socket={socket} />
-        </div>
-      </div>
-      {renderModal(isOpened, type)}
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </>
-  ) : (
-    <Navigate to="/login" state={{ from: location }} />
+      <Routes>
+        <Route path="/" element={<Chat notify={notify} socket={socket} />} />
+        <Route path="/login" element={<LoginForm notify={notify} />} />
+        <Route path="/signup" element={<SignUpForm notify={notify} />} />
+        <Route path="/login" element={<ErrorPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
+
 export default App;

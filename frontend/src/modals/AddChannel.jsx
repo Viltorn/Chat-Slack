@@ -50,12 +50,12 @@ const AddChannel = ({ socket, notify }) => {
             notify('add');
             handleClose();
           } else {
-            console.log('Lost connection');
             formik.setSubmitting(false);
             notify('error');
           }
         });
       } catch (err) {
+        console.log(err);
         notify('error');
         formik.setSubmitting(false);
       }

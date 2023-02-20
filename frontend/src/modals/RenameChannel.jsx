@@ -46,7 +46,6 @@ const RenameChannel = ({ socket, notify }) => {
           notify('rename');
         } else {
           notify('error');
-          console.log('Lost connection');
           formik.setSubmitting(false);
         }
       });

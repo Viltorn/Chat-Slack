@@ -1,34 +1,18 @@
 import i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import React, { useState, useMemo } from 'react';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from 'react-router-dom';
+import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
+import { ToastContainer } from 'react-toastify';
 import { Provider } from 'react-redux';
 import store from './slices/index.js';
 import App from './components/App';
-import LoginForm from './components/LoginForm.jsx';
-import ErrorPage from './components/error-page.jsx';
-import SignUpForm from './components/SignUpForm.jsx';
 import resources from './locales/index.js';
 import AuthContext from './contexts/index.js';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/login',
-    element: <LoginForm />,
-  },
-  {
-    path: '/signup',
-    element: <SignUpForm />,
-  },
-]);
+const rollbarConfig = {
+  accessToken: 'b818379a2e194c97bb88955db99f4e28',
+  environment: 'production',
+};
 
 const AuthProvider = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -46,7 +30,7 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const init = async () => {
+const Init = async () => {
   const i18n = i18next.createInstance();
 
   await i18n
@@ -63,14 +47,30 @@ const init = async () => {
   return (
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
-        <Provider store={store}>
-          <div className="d-flex flex-column h-100">
-            <RouterProvider router={router} />
-          </div>
-        </Provider>
+        <RollbarProvider config={rollbarConfig}>
+          <ErrorBoundary>
+            <Provider store={store}>
+              <div className="d-flex flex-column h-100">
+                <App />
+                <ToastContainer
+                  position="top-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                />
+              </div>
+            </Provider>
+          </ErrorBoundary>
+        </RollbarProvider>
       </AuthProvider>
     </I18nextProvider>
   );
 };
 
-export default init;
+export default Init;

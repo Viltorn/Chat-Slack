@@ -34,7 +34,7 @@ export default {
       Min6: 'Минимум 6 символов',
       Unique: 'Должно быть уникальным',
       Identical: 'Пароль должны совпадать',
-      NetworkError: 'Ошибка сети',
+      NetworkError: 'Ошибка соединения',
       false: '',
     },
     messages: {
