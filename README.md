@@ -1,6 +1,7 @@
 ### Hexlet tests and linter status:
 ![Node CI](https://github.com/Viltorn/frontend-project-12/actions/workflows/nodejs.yml/badge.svg)
 [![Actions Status](https://github.com/Viltorn/frontend-project-12/workflows/hexlet-check/badge.svg)](https://github.com/Viltorn/frontend-project-12/actions)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b328e56e801f1cbfdd3d/maintainability)](https://codeclimate.com/github/Viltorn/frontend-project-12/maintainability)
 
 ### Slack chat:
 This is simplified version of slack chat.
