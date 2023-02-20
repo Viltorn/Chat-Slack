@@ -37,8 +37,8 @@ const AddChannel = ({ socket, notify }) => {
       channel: Yup
         .string()
         .notOneOf(channelNames, 'Unique')
-        .max(20, 'Max20')
-        .min(3, 'Min3'),
+        .max(20, 'Min3Max20')
+        .min(3, 'Min3Max20'),
     }),
     onSubmit: (values) => {
       try {

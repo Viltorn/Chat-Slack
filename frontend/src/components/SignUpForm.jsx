@@ -53,8 +53,8 @@ const SignUpForm = ({ notify }) => {
       username: Yup
         .string()
         .required('Required')
-        .max(20, 'Max20')
-        .min(3, 'Min3'),
+        .max(20, 'Min3Max20')
+        .min(3, 'Min3Max20'),
       password: Yup
         .string()
         .required('Required')
