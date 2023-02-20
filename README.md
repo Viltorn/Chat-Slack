@@ -4,7 +4,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/b328e56e801f1cbfdd3d/maintainability)](https://codeclimate.com/github/Viltorn/frontend-project-12/maintainability)
 
 ### Slack chat:
-This is simplified version of slack chat.
+This is simplified web version of slack chat. Sign up and start chatting with your friends! You also can add, rename or delete additional channels.
 ### Check the app -> [Chat (Slack)](https://frontend-project-12-production-19ba.up.railway.app)
 #### Default login & password: admin
 

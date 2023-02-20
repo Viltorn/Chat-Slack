@@ -20,6 +20,11 @@ import Header from './Header.jsx';
 
 const socket = io();
 
+window.onresize = () => {
+  document.body.height = window.innerHeight;
+};
+window.onresize();
+
 const App = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
