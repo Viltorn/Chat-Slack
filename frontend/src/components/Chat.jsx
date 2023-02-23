@@ -10,16 +10,7 @@ import Messages from './Messages.jsx';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messageActions } from '../slices/messagesSlice.js';
 import getModal from '../modals/index.js';
-
-const getAuthHeader = () => {
-  const userId = JSON.parse(localStorage.getItem('user'));
-
-  if (userId && userId.token) {
-    return { Authorization: `Bearer ${userId.token}` };
-  }
-
-  return {};
-};
+import getAuthHeader from '../utils/getAuthHeader';
 
 const Chat = ({ notify, socket }) => {
   const location = useLocation();

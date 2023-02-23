@@ -1,20 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import 'bootstrap';
 import axios from 'axios';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import routes from '../routes.js';
 import logo from '../assets/SignUp.png';
-import useAuth from '../hooks/index.js';
+import authContext from '../contexts/authContext.js';
+import { SignUpSchema } from '../utils/validation.js';
 
 const SignUpForm = ({ notify }) => {
   const { t } = useTranslation();
   const inputEl = useRef();
   const navigate = useNavigate();
-  const auth = useAuth();
+  const { logIn } = useContext(authContext);
   const [authFailed, setAuthFailed] = useState(false);
 
   useEffect(() => {
@@ -33,7 +38,7 @@ const SignUpForm = ({ notify }) => {
         const res = await axios.post(routes.signUpPath(), values);
         if (res.status === 201) {
           localStorage.setItem('user', JSON.stringify(res.data));
-          auth.logIn();
+          logIn();
           const { from } = { from: { pathname: '/' } };
           navigate(from);
         }
@@ -49,21 +54,7 @@ const SignUpForm = ({ notify }) => {
         throw Error('NetworkError');
       }
     },
-    validationSchema: Yup.object().shape({
-      username: Yup
-        .string()
-        .required('Required')
-        .max(20, 'Min3Max20')
-        .min(3, 'Min3Max20'),
-      password: Yup
-        .string()
-        .required('Required')
-        .min(6, 'Min6'),
-      repeatPass: Yup
-        .string()
-        .required('Required')
-        .oneOf([Yup.ref('password'), null], 'Identical'),
-    }),
+    validationSchema: SignUpSchema,
     validateOnChange: false,
   });
 

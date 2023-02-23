@@ -20,11 +20,6 @@ import Header from './Header.jsx';
 
 const socket = io();
 
-window.onresize = () => {
-  document.body.height = window.innerHeight;
-};
-window.onresize();
-
 const App = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -96,7 +91,7 @@ const App = () => {
         <Route path="/" element={<Chat notify={notify} socket={socket} />} />
         <Route path="/login" element={<LoginForm notify={notify} />} />
         <Route path="/signup" element={<SignUpForm notify={notify} />} />
-        <Route path="/login" element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import useAuth from '../hooks/index.js';
+import authContext from '../contexts/authContext.js';
 
 const Header = () => {
-  const auth = useAuth();
+  const { logOut } = useContext(authContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const makeLogOut = () => {
-    auth.logOut();
+    logOut();
     navigate('/login');
   };
 

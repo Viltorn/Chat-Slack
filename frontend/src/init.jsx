@@ -1,33 +1,17 @@
 import i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
 import { ToastContainer } from 'react-toastify';
-import { Provider } from 'react-redux';
+import { Provider as StoreProvider } from 'react-redux';
 import store from './slices/index.js';
 import App from './components/App';
 import resources from './locales/index.js';
-import AuthContext from './contexts/index.js';
+import { AuthProvider } from './contexts/authContext.js';
 
 const rollbarConfig = {
   accessToken: 'b818379a2e194c97bb88955db99f4e28',
   environment: 'production',
-};
-
-const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const logIn = () => setLoggedIn(true);
-  const logOut = () => {
-    localStorage.removeItem('user');
-    setLoggedIn(false);
-  };
-
-  return (
-    <AuthContext.Provider value={useMemo(() => ({ logIn, logOut, loggedIn }), [loggedIn])}>
-      {children}
-    </AuthContext.Provider>
-  );
 };
 
 const Init = async () => {
@@ -49,7 +33,7 @@ const Init = async () => {
       <AuthProvider>
         <RollbarProvider config={rollbarConfig}>
           <ErrorBoundary>
-            <Provider store={store}>
+            <StoreProvider store={store}>
               <div className="d-flex flex-column h-100">
                 <App />
                 <ToastContainer
@@ -65,7 +49,7 @@ const Init = async () => {
                   theme="light"
                 />
               </div>
-            </Provider>
+            </StoreProvider>
           </ErrorBoundary>
         </RollbarProvider>
       </AuthProvider>

@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import {
   Modal,
   FormGroup,
@@ -13,6 +12,7 @@ import {
 } from 'react-bootstrap';
 import { actions as modalActions } from '../slices/modalsSlice';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
+import { ChannelSchema } from '../utils/validation';
 
 const AddChannel = ({ socket, notify }) => {
   const { t } = useTranslation();
@@ -33,13 +33,7 @@ const AddChannel = ({ socket, notify }) => {
     initialValues: {
       channel: '',
     },
-    validationSchema: Yup.object({
-      channel: Yup
-        .string()
-        .notOneOf(channelNames, 'Unique')
-        .max(20, 'Min3Max20')
-        .min(3, 'Min3Max20'),
-    }),
+    validationSchema: ChannelSchema(channelNames),
     onSubmit: (values) => {
       try {
         socket.emit('newChannel', { name: values.channel }, (response) => {

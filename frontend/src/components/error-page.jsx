@@ -1,10 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { useRouteError } from 'react-router-dom';
 import errorImage from '../assets/not-found.svg';
 
 const ErrorPage = () => {
-  const error = useRouteError();
-  console.error(error);
   const { t } = useTranslation();
 
   return (

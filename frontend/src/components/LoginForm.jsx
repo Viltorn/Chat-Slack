@@ -1,20 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import 'bootstrap';
 import axios from 'axios';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import routes from '../routes.js';
 import logo from '../assets/ChatLogo.png';
-import useAuth from '../hooks/index.js';
+import authContext from '../contexts/authContext.js';
+import { LoginSchema } from '../utils/validation.js';
 
 const LoginForm = ({ notify }) => {
   const { t } = useTranslation();
   const inputEl = useRef();
   const navigate = useNavigate();
-  const auth = useAuth();
+  const { logIn } = useContext(authContext);
   const [authFailed, setAuthFailed] = useState(false);
   useEffect(() => {
     inputEl.current.focus();
@@ -32,7 +37,7 @@ const LoginForm = ({ notify }) => {
         const res = await axios.post(routes.loginPath(), values);
         if (res.status === 200) {
           localStorage.setItem('user', JSON.stringify(res.data));
-          auth.logIn();
+          logIn();
           const { from } = { from: { pathname: '/' } };
           navigate(from);
         }
@@ -48,10 +53,7 @@ const LoginForm = ({ notify }) => {
         throw Error('NetworkError');
       }
     },
-    validationSchema: Yup.object().shape({
-      username: Yup.string(),
-      password: Yup.string(),
-    }),
+    validationSchema: LoginSchema,
     validateOnChange: false,
   });
 
@@ -62,7 +64,7 @@ const LoginForm = ({ notify }) => {
           <div className="card shadow-sm">
             <div className="card-body row p-5">
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                <img src={logo} className="rounded-circle" style={{ height: '200px', width: '200px' }} alt="Войти" />
+                <img src={logo} className="rounded-circle img-fluid" style={{ height: '200px', width: '200px' }} alt="Войти" />
               </div>
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                 <h1 className="text-center mb-4">{t('Enter')}</h1>

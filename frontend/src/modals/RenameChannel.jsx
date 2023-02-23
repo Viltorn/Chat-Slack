@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import {
   Modal,
   FormGroup,
@@ -11,6 +10,7 @@ import {
   FormLabel,
 } from 'react-bootstrap';
 import { actions as modalActions } from '../slices/modalsSlice';
+import { ChannelSchema } from '../utils/validation';
 
 const RenameChannel = ({ socket, notify }) => {
   const { t } = useTranslation();
@@ -32,13 +32,7 @@ const RenameChannel = ({ socket, notify }) => {
     initialValues: {
       channel: '',
     },
-    validationSchema: Yup.object({
-      channel: Yup
-        .string()
-        .notOneOf(channelNames, 'Unique')
-        .max(20, 'Min3Max20')
-        .min(3, 'Min3Max20'),
-    }),
+    validationSchema: ChannelSchema(channelNames),
     onSubmit: (values) => {
       socket.emit('renameChannel', { id, name: values.channel }, (response) => {
         if (response.status === 'ok') {
