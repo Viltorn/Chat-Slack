@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +7,8 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  Navigate,
+  useLocation,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
@@ -17,8 +19,18 @@ import ErrorPage from './error-page.jsx';
 import SignUpForm from './SignUpForm.jsx';
 import Chat from './Chat.jsx';
 import Header from './Header.jsx';
+import authContext from '../contexts/authContext.js';
 
 const socket = io();
+
+const PrivateRoute = ({ children }) => {
+  const { loggedIn } = useContext(authContext);
+  const location = useLocation();
+
+  return (
+    loggedIn ? children : <Navigate to="/login" state={{ from: location }} />
+  );
+};
 
 const App = () => {
   const { t } = useTranslation();
@@ -56,22 +68,18 @@ const App = () => {
       console.log(socket.connected);
     });
     socket.on('newMessage', (payload) => {
-      console.log(payload);
       dispatch(messageActions.addMessage(payload));
     });
 
     socket.on('newChannel', (payload) => {
-      console.log(payload);
       dispatch(channelsActions.addChannel(payload));
     });
 
     socket.on('removeChannel', (payload) => {
-      console.log(payload);
       dispatch(channelsActions.removeChannel(payload));
     });
 
     socket.on('renameChannel', (payload) => {
-      console.log(payload);
       dispatch(channelsActions.renameChannel(payload));
     });
 
@@ -88,7 +96,14 @@ const App = () => {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<Chat notify={notify} socket={socket} />} />
+        <Route
+          path="/"
+          element={(
+            <PrivateRoute>
+              <Chat notify={notify} socket={socket} />
+            </PrivateRoute>
+          )}
+        />
         <Route path="/login" element={<LoginForm notify={notify} />} />
         <Route path="/signup" element={<SignUpForm notify={notify} />} />
         <Route path="*" element={<ErrorPage />} />

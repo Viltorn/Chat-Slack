@@ -37,8 +37,7 @@ const SignUpForm = ({ notify }) => {
       try {
         const res = await axios.post(routes.signUpPath(), values);
         if (res.status === 201) {
-          localStorage.setItem('user', JSON.stringify(res.data));
-          logIn();
+          logIn(res.data);
           const { from } = { from: { pathname: '/' } };
           navigate(from);
         }

@@ -36,8 +36,7 @@ const LoginForm = ({ notify }) => {
       try {
         const res = await axios.post(routes.loginPath(), values);
         if (res.status === 200) {
-          localStorage.setItem('user', JSON.stringify(res.data));
-          logIn();
+          logIn(res.data);
           const { from } = { from: { pathname: '/' } };
           navigate(from);
         }

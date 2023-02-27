@@ -4,8 +4,7 @@ const getAuthHeader = () => {
   if (userId && userId.token) {
     return { Authorization: `Bearer ${userId.token}` };
   }
-
-  return {};
+  return null;
 };
 
 export default getAuthHeader;

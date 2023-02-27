@@ -3,17 +3,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { Navigate, useLocation } from 'react-router-dom';
 import routes from '../routes';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messageActions } from '../slices/messagesSlice.js';
 import getModal from '../modals/index.js';
-import getAuthHeader from '../utils/getAuthHeader';
+import getAuthHeader from '../utils/getAuthHeader.js';
 
 const Chat = ({ notify, socket }) => {
-  const location = useLocation();
   const dispatch = useDispatch();
   const { isOpened, type } = useSelector((state) => state.modalsReducer);
 
@@ -50,7 +48,7 @@ const Chat = ({ notify, socket }) => {
     getData();
   }, [dispatch, showError]);
 
-  return localStorage.getItem('user') ? (
+  return (
     <>
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
@@ -60,8 +58,6 @@ const Chat = ({ notify, socket }) => {
       </div>
       {renderModal(isOpened, type)}
     </>
-  ) : (
-    <Navigate to="/login" state={{ from: location }} />
   );
 };
 export default Chat;
