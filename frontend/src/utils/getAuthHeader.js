@@ -1,8 +1,10 @@
-const getAuthHeader = () => {
-  const userId = JSON.parse(localStorage.getItem('user'));
+export const getAuthToken = () => JSON.parse(localStorage.getItem('user'));
 
-  if (userId && userId.token) {
-    return { Authorization: `Bearer ${userId.token}` };
+const getAuthHeader = () => {
+  const userToken = getAuthToken();
+
+  if (userToken && userToken.token) {
+    return { Authorization: `Bearer ${userToken.token}` };
   }
   return null;
 };

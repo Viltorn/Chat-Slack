@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import authContext from '../contexts/authContext.js';
 
 const Header = () => {
-  const { logOut } = useContext(authContext);
+  const { logOut, isLogged } = useContext(authContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -19,7 +19,7 @@ const Header = () => {
         <a className="navbar-brand" href="/">
           Hexlet Chat
         </a>
-        {localStorage.getItem('user') ? (
+        {isLogged() ? (
           <button type="button" onClick={makeLogOut} className="btn btn-primary">{t('Exit')}</button>
         ) : null}
       </div>

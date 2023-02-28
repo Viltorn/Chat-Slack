@@ -1,24 +1,25 @@
-import { createContext, useState, useMemo } from 'react';
-import getAuthHeader from '../utils/getAuthHeader.js';
-
-const auth = getAuthHeader() !== null;
+import { createContext, useMemo } from 'react';
+import { getAuthToken } from '../utils/getAuthHeader.js';
 
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(auth);
+  const isLogged = () => {
+    if (getAuthToken()) {
+      return true;
+    }
+    return false;
+  };
 
   const logIn = (data) => {
-    setLoggedIn(true);
     localStorage.setItem('user', JSON.stringify(data));
   };
   const logOut = () => {
     localStorage.removeItem('user');
-    setLoggedIn(false);
   };
 
   return (
-    <AuthContext.Provider value={useMemo(() => ({ logIn, logOut, loggedIn }), [loggedIn])}>
+    <AuthContext.Provider value={useMemo(() => ({ logIn, logOut, isLogged }), [])}>
       {children}
     </AuthContext.Provider>
   );

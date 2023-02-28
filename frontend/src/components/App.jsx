@@ -24,11 +24,11 @@ import authContext from '../contexts/authContext.js';
 const socket = io();
 
 const PrivateRoute = ({ children }) => {
-  const { loggedIn } = useContext(authContext);
+  const { isLogged } = useContext(authContext);
   const location = useLocation();
 
   return (
-    loggedIn ? children : <Navigate to="/login" state={{ from: location }} />
+    isLogged() ? children : <Navigate to="/login" state={{ from: location }} />
   );
 };
 
