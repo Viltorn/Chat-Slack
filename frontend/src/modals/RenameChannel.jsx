@@ -68,7 +68,7 @@ const RenameChannel = ({ socket, notify }) => {
                 name="channel"
                 className="mb-2"
               />
-              {formik.touched.channel && formik.errors.channel ? (
+              {formik.errors.channel ? (
                 <div className="invalid-feedback">{t(`errors.${formik.errors.channel}`)}</div>
               ) : null}
               <FormLabel htmlFor="channel" className="visually-hidden">{t('ChannelName')}</FormLabel>

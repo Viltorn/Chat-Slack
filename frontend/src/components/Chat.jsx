@@ -30,7 +30,7 @@ const Chat = ({ notify, socket }) => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const { data } = await axios.get(routes.statePath(), {
+        const { data } = await axios.get(routes.dataPath(), {
           headers: getAuthHeader(),
         });
         const { channels, messages, currentChannelId } = data;
