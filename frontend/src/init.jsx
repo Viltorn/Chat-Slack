@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import React from 'react';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { Provider as StoreProvider } from 'react-redux';
 import store from './slices/index.js';
 import App from './components/App';
@@ -17,7 +17,7 @@ const rollbarConfig = {
 const Init = async () => {
   const i18n = i18next.createInstance();
 
-  await i18n
+  const t = await i18n
     .use(initReactI18next)
     .init({
       debug: false,
@@ -27,6 +27,32 @@ const Init = async () => {
       resources,
       fallbackLng: 'ru',
     });
+  const notify = (status) => {
+    const settings = {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    };
+    switch (status) {
+      case 'add':
+        toast.success(t('ChannelCreated'), settings);
+        break;
+      case 'remove':
+        toast.success(t('ChannelRemove'), settings);
+        break;
+      case 'rename':
+        toast.success(t('ChannelRenamed'), settings);
+        break;
+      default:
+        toast.error(t('errors.NetworkError'), settings);
+        break;
+    }
+  };
 
   return (
     <I18nextProvider i18n={i18n}>
@@ -35,7 +61,7 @@ const Init = async () => {
           <ErrorBoundary>
             <StoreProvider store={store}>
               <div className="d-flex flex-column h-100">
-                <App />
+                <App notify={notify} />
                 <ToastContainer
                   position="top-right"
                   autoClose={5000}

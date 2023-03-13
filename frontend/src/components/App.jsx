@@ -1,6 +1,9 @@
-import React, { useEffect, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
+import React, {
+  useEffect,
+  useContext,
+  useCallback,
+  useState,
+} from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 import {
@@ -11,7 +14,9 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import axios from 'axios';
 import { io } from 'socket.io-client';
+import routes from '../routes';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messageActions } from '../slices/messagesSlice.js';
 import LoginForm from './LoginForm.jsx';
@@ -32,38 +37,29 @@ const PrivateRoute = ({ children }) => {
   );
 };
 
-const App = () => {
-  const { t } = useTranslation();
+const App = ({ notify }) => {
   const dispatch = useDispatch();
+  const { logOut } = useContext(authContext);
+  const [connected, setConnnectStatus] = useState(true);
 
-  const notify = (status) => {
-    const settings = {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-    };
-    switch (status) {
-      case 'add':
-        toast.success(t('ChannelCreated'), settings);
-        break;
-      case 'remove':
-        toast.success(t('ChannelRemove'), settings);
-        break;
-      case 'rename':
-        toast.success(t('ChannelRenamed'), settings);
-        break;
-      default:
-        toast.error(t('errors.NetworkError'), settings);
-        break;
-    }
-  };
+  const showError = useCallback(() => {
+    notify('error');
+  }, [notify]);
 
   useEffect(() => {
+    const checkServer = async () => {
+      try {
+        const response = await axios.get(routes.defaultPath());
+        if (response.status === 200) {
+          setTimeout(() => checkServer(), 5000);
+        }
+      } catch (err) {
+        logOut();
+        showError();
+        setConnnectStatus(false);
+      }
+    };
+    checkServer();
     socket.on('connect', () => {
       console.log(socket.connected);
     });
@@ -90,7 +86,7 @@ const App = () => {
       socket.off('removeChannel');
       socket.off('renameChannel');
     };
-  }, [dispatch]);
+  }, [dispatch, logOut, showError]);
 
   return (
     <BrowserRouter>
@@ -105,8 +101,8 @@ const App = () => {
           )}
         />
         <Route path="/login" element={<LoginForm notify={notify} />} />
-        <Route path="/signup" element={<SignUpForm notify={notify} />} />
-        <Route path="*" element={<ErrorPage />} />
+        <Route path="/signup" element={connected ? <SignUpForm notify={notify} /> : <Navigate to="/login" />} />
+        <Route path="*" element={connected ? <ErrorPage /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
