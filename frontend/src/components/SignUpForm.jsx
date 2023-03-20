@@ -64,7 +64,7 @@ const SignUpForm = ({ notify }) => {
           <div className="card shadow-sm">
             <div className="card-body row p-5">
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                <img src={logo} className="rounded-circle" style={{ height: '200px', width: '200px' }} alt="Войти" />
+                <img src={logo} className="rounded-circle" style={{ height: '200px', width: '200px' }} alt={t('Registration')} />
               </div>
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                 <h1 className="text-center mb-4">{t('Registration')}</h1>
@@ -124,7 +124,7 @@ const SignUpForm = ({ notify }) => {
                       <div className="invalid-feedback">{t(`errors.${formik.errors.repeatPass}`)}</div>
                     ) : null}
                   </Form.Group>
-                  <Button type="submit" variant="outline-primary" className="w-100">Войти</Button>
+                  <Button type="submit" variant="outline-primary" className="w-100">{t('Registration')}</Button>
                 </fieldset>
               </Form>
             </div>

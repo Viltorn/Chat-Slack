@@ -63,7 +63,7 @@ const LoginForm = ({ notify }) => {
           <div className="card shadow-sm">
             <div className="card-body row p-5">
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                <img src={logo} className="rounded-circle img-fluid" style={{ height: '200px', width: '200px' }} alt="Войти" />
+                <img src={logo} className="rounded-circle img-fluid" style={{ height: '200px', width: '200px' }} alt={t('Enter')} />
               </div>
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                 <h1 className="text-center mb-4">{t('Enter')}</h1>
