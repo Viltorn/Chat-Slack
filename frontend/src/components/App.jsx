@@ -26,6 +26,8 @@ import Chat from './Chat.jsx';
 import Header from './Header.jsx';
 import authContext from '../contexts/authContext.js';
 
+// main app
+
 const socket = io();
 
 const PrivateRoute = ({ children }) => {
